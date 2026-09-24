@@ -8,6 +8,7 @@ struct sqm {
 };
 
 #define sqm_create_fill(s) sqm_create(s, true)
+#define sqm_create_blank(s) sqm_create(s, false)
 struct sqm sqm_create(int size, bool fill) {
     int total_size = sizeof(int) * size * size;
     struct sqm m = {
@@ -24,6 +25,8 @@ struct sqm sqm_create(int size, bool fill) {
                 m.data[row + col] = (row + col) % 10;
             }
         }
+    } else {
+        memset(&(m.data), 0, m.size*m.size);
     }
     return m;
 }
@@ -42,22 +45,22 @@ void sqm_free(struct sqm m) {
     free(m.data);
 }
 
-void sqm_mult(struct sqm m1, struct sqm m2, struct sqm *m3)
+void sqm_mult(struct sqm src1, struct sqm src2, struct sqm *dst)
 {
-    if (m1.size != m2.size || m2.size != m3->size) {
+    if (src1.size != src2.size || src2.size != dst->size) {
         printf("Only similarly sized matricies are allowed %i, %i, %i",
-                m1.size, m2.size, m3->size);
+                src1.size, src2.size, dst->size);
     }
-    /* It's 10% slower to use m3->data[row * m3->data + col]
-    * then incrementing row but m3->data, who might have thought
-    * Sergey Zubkov probably :)
+    /*
+    * It's 10% slower to use m.data[row * m.data + col]
+    * then incrementing row but m.data, who might have thought, Sergey Zubkov probably :)
     */
-    for (int row=0; row<m3->size * m3->size; row += m3->size) {
-        for (int col=0; col<m3->size; col++) {
-            m3->data[row + col] = 0;
-            for (int i = 0, ri = 0; i<m3->size; i++, ri+=m3->size) {
-                m3->data[row + col] += (m1.data[row + i]
-                        * m2.data[ri + col]);
+    for (int row=0; row<dst->size * dst->size; row += dst->size) {
+        for (int col=0; col<dst->size; col++) {
+            dst->data[row + col] = 0;
+            for (int i = 0, ri = 0; i<dst->size; i++, ri += dst->size) {
+                dst->data[row + col] += (src1.data[row + i]
+                        * src2.data[ri + col]);
             }
 
         }
@@ -70,9 +73,9 @@ void sqm_mult(struct sqm m1, struct sqm m2, struct sqm *m3)
 int main() {
     struct sqm m1 = sqm_create_fill(DIM);
     struct sqm m2 = sqm_create_fill(DIM);
-    struct sqm m3 = sqm_create(DIM, false);
+    struct sqm m3 = sqm_create_blank(DIM);
 
-    sqm_mult_mul(m1, m2, &m3);
+    sqm_mul(m1, m2, &m3);
 
     sqm_print(m1);
     sqm_print(m2);
