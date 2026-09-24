@@ -16,7 +16,11 @@ build/%.o: src/%.c
 	@mkdir -p build
 	$(CC) $(CFLAGS) -c $< -o $@
 
+.PHONY: clean
 clean:
 	rm -rf build $(TARGET)
 
-.PHONY: clean
+.PHONY: format
+format:
+	@echo "Formatting sources: $(SOURCES)"
+	clang-format -i $(SOURCES)
