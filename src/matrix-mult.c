@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct sqm {
     int size;
@@ -43,7 +44,7 @@ void sqm_print(struct sqm m) {
 
 void sqm_free(struct sqm m) { free(m.data); }
 
-void sqm_mult(struct sqm src1, struct sqm src2, struct sqm *dst) {
+void sqm_mul(struct sqm src1, struct sqm src2, struct sqm *dst) {
     if (src1.size != src2.size || src2.size != dst->size) {
         printf("Only similarly sized matricies are allowed %i, %i, %i", src1.size, src2.size,
                dst->size);
