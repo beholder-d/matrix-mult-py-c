@@ -13,11 +13,11 @@ struct sqm sqm_create(int size, bool fill) {
     if (fill) {
         for (int row = 0; row < m.size * m.size; row += m.size) {
             for (int col = 0; col < m.size; col++) {
-                m.data[row + col] = (row + col) % 10;
+                m.data[row + col] = (row + col) % 35;
             }
         }
     } else {
-        memset(&(m.data), 0, m.size * m.size);
+        memset(m.data, 0, m.size * m.size);
     }
     return m;
 }

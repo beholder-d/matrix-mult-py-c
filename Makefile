@@ -16,17 +16,17 @@ LIB_RELEASE_OBJS := $(patsubst %.c,build/lib-release/%.o,$(LIB_RELEASE_SRCS))
 LIB_RELEASE_CFLAGS := $(COMMON_CFLAGS) -fPIC -c
 LIB_RELEASE_LDFLAGS = -shared
 
+RELEASE_OBJS := $(patsubst %.c,build/release/%.o,$(MAIN_C))
+RELEASE_CFLAGS := $(COMMON_CFLAGS) -O2 -DNDEBUG
+RELEASE_LIB = -L./build/lib-release/ -l$(TARGET)
+
 LIB_DEBUG_OBJS := $(subst /lib-release/,/lib-debug/,$(LIB_RELEASE_OBJS))
 LIB_DEBUG_CFLAGS := $(COMMON_CFLAGS) -fPIC -c -g3 -O0 -fno-omit-frame-pointer
 LIB_DEBUG_LDFLAGS = -shared
 
-RELEASE_OBJS := $(patsubst %.c,build/release/%.o,$(MAIN_C))
-RELEASE_CFLAGS := $(COMMON_CFLAGS) -O2 -DNDEBUG
-RELEASE_LDFLAGS = -L./build/lib-release/ -l$(TARGET)
-
 DEBUG_OBJS := $(subst /release/,/debug/,$(RELEASE_OBJS))
 DEBUG_CFLAGS := $(COMMON_CFLAGS) -g3 -O0 -fno-omit-frame-pointer
-DEBUG_LDFLAGS := $(subst /lib-release/,/lib-debug/,$(RELEASE_LDFLAGS))
+DEBUG_LIB := $(subst /lib-release/,/lib-debug/,$(RELEASE_LIB))
 
 # default target
 .PHONY: all lib-release release lib-debug debug
@@ -53,7 +53,7 @@ build/lib-release/%.o: %.c
 build/release/$(TARGET): $(RELEASE_OBJS)
 	@echo " -   link release for $@"
 	@mkdir -p $(@D)
-	$(CC) $(LDFLAGS) $(RELEASE_LDFLAGS) $^ $(LDLIBS) -o $@
+	$(CC) $(LDFLAGS) $^ $(RELEASE_LIB) $(LDLIBS) -o $@
 
 build/release/%.o: %.c
 	@echo " -   compile release for $@"
@@ -75,7 +75,7 @@ build/lib-debug/%.o: %.c
 build/debug/$(TARGET): $(DEBUG_OBJS)
 	@echo " -   link debug for $@"
 	@mkdir -p $(@D)
-	$(CC) $(LDFLAGS) $(DEBUG_LDFLAGS) $^ $(LDLIBS) -o $@
+	$(CC) $(LDFLAGS) $^ $(DEBUG_LIB) $(LDLIBS) -o $@
 
 build/debug/%.o: %.c
 	@echo " -   compile debug for $@"
