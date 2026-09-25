@@ -1,15 +1,5 @@
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "matrix-op.h"
 
-struct sqm {
-    int size;
-    int *data;
-};
-
-#define sqm_create_fill(s) sqm_create(s, true)
-#define sqm_create_blank(s) sqm_create(s, false)
 struct sqm sqm_create(int size, bool fill) {
     int total_size = sizeof(int) * size * size;
     struct sqm m = {
@@ -62,23 +52,3 @@ void sqm_mul(struct sqm src1, struct sqm src2, struct sqm *dst) {
         }
     }
 };
-
-#define DIM 20
-
-int main() {
-    struct sqm m1 = sqm_create_fill(DIM);
-    struct sqm m2 = sqm_create_fill(DIM);
-    struct sqm m3 = sqm_create_blank(DIM);
-
-    sqm_mul(m1, m2, &m3);
-
-    sqm_print(m1);
-    sqm_print(m2);
-    sqm_print(m3);
-
-    sqm_free(m1);
-    sqm_free(m2);
-    sqm_free(m3);
-
-    return 0;
-}
